@@ -74,3 +74,6 @@ assert   1 + 1 == 2 , "Math broke"
 first , *  middle , last = [ 1 , 2 , 3 , 4 ]
 
 del   complex_logic
+
+
+something( a  = 2 )

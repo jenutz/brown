@@ -1,42 +1,38 @@
-import click
 import libcst as cst
-from libcst.display import dump
-from libcst.metadata import MetadataWrapper, PositionProvider
+import click
 import os
 
-from IndentationTransformer import IndentationTransformer
-from SpacesTransformer import SpacesTransformer 
-from VariableNameVisitor import VariableNameVisitor 
+from transformers.indentation import IndentationTransformer
+from transformers.whitespace import SpacesTransformer
+from transformers.blankline import BlankLineTransformer
 
-
-class BlankLineTransformer(cst.CSTTransformer):
-    def leave_TrailingWhitespace(self, old_node, new_node):
-        return new_node.with_changes(whitespace=cst.SimpleWhitespace(value=""))
 
 def main(filename, **kwargs):
     abs_path = os.path.abspath(filename)
 
     with open(filename, "r") as f:
         tree = cst.parse_module(f.read())
-        if kwargs["tree"]:
-            print(tree)
-            exit()
+
+    if kwargs["tree"]:
+        print(tree)
+        exit()
+
     transformers = [
         IndentationTransformer(kwargs["indent"]),
         SpacesTransformer(),
+        BlankLineTransformer(),
     ]
-    visitors = [
-        # VariableNameVisitor(3),
-    ]
+
     for t in transformers:
         tree = tree.visit(t)
-    tree = MetadataWrapper(tree)
-    for v in visitors:
-        tree.visit(v)
-        v.print_warnings(abs_path)
 
-    if not kwargs["silent"]:
-        print((tree.module.code))
+    if kwargs["dry_run"]:
+        print(tree.code)
+    elif kwargs["res_tree"]:
+        print(tree)
+    else:
+        with open(filename, "w") as f:
+            f.write(tree.code)
 
 
 if __name__ == "__main__":
@@ -44,29 +40,30 @@ if __name__ == "__main__":
         name="linter",
         callback=main,
         params=[
-            click.Argument(["filename"], required=True),
-            click.Option(["--indent", "-i"], default=4, type=int, help="Indent"),
-            click.Option(["--complexity-limit", "-c"], default=10, type=int, help="Limit"),
+            click.Argument(["filename"], type=click.Path(exists=True)),
             click.Option(
-                [
-                    "--ignore-imports",
-                ],
-                is_flag=True,
-                default=False,
+                ["--indent", "-i"],
+                default=4,
+                type=int,
+                help="Number of spaces to use for indentation levels.",
             ),
             click.Option(
-                [
-                    "--tree",
-                ],
+                ["--dry-run"],
                 is_flag=True,
                 default=False,
+                help="Output the formatted code to terminal (stdout) without modifying the original file.",
             ),
             click.Option(
-                [
-                    "--silent",
-                ],
+                ["--tree"],
                 is_flag=True,
                 default=False,
+                help="DEBUG: Print the LibCST parse tree of the source file and exit.",
+            ),
+            click.Option(
+                ["--res-tree"],
+                is_flag=True,
+                default=False,
+                help="DEBUG: Print the LibCST parse tree of the resulting formatted code and exit.",
             ),
         ],
     )
