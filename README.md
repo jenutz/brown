@@ -1,4 +1,6 @@
 # brown
+> You are what you eat.
+
 
 A Python formatter focused on consistent spacing and blank lines without altering code structure.
 
@@ -17,6 +19,10 @@ It ensures proper spacing around operators and delimiters while maintaining cons
 
 ## Installation
 
+### Standalone Binary
+
+If you don't want to manage a Python environment, download the latest pre-compiled executable from the [Releases page](../../releases).
+
 ### From Source
 Requires Python 3.10+.
 ```bash
@@ -24,11 +30,23 @@ pip install -r requirements.txt
 python3 brown.py path/to/file.py
 ```
 
-### Standalone Binary
+### Manually Building the Binary
 
-If you don't want to manage a Python environment, download the latest pre-compiled executable from the Releases page.
+If you wish to compile executable yourself use the provided PyInstaller specification.
 
+Install Build Dependencies:
+```bash
+pip install -r requirements.txt
+pip install pyinstaller
+```
+
+Build:
+```bash
+pyinstaller --clean brown.spec
+```
+
+The binary will be located in the dist/ directory.
 
 ## License
 
-Distributed under the MIT License. See LICENSE for more information.
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
