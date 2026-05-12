@@ -6,38 +6,43 @@ from transformers.indentation import IndentationTransformer
 from transformers.whitespace import SpacesTransformer
 from transformers.blankline import BlankLineTransformer
 
-
-def main(filename, **kwargs):
-    abs_path = os.path.abspath(filename)
-
-    with open(filename, "r") as f:
-        tree = cst.parse_module(f.read())
-
-    if kwargs["tree"]:
-        print(tree)
-        exit()
-
+def format_code(code, **kwargs):
     transformers = [
         IndentationTransformer(kwargs["indent"]),
         SpacesTransformer(),
         BlankLineTransformer(),
     ]
 
+    tree = cst.parse_module(code)
     for t in transformers:
         tree = tree.visit(t)
+    
+    return tree.code
+
+def main(filename, **kwargs):
+    abs_path = os.path.abspath(filename)
+
+    with open(filename, "r") as f:
+        code = f.read()
+
+    if kwargs["tree"]:
+        print(cst.parse_module(code))
+        exit()
+
+    code = format_code(code, **kwargs)
 
     if kwargs["dry_run"]:
-        print(tree.code)
+        print(code)
     elif kwargs["res_tree"]:
-        print(tree)
+        print(cst.parse_module(code))
     else:
         with open(filename, "w") as f:
-            f.write(tree.code)
+            f.write(code)
 
 
 if __name__ == "__main__":
     cmd = click.Command(
-        name="linter",
+        name="Brown",
         callback=main,
         params=[
             click.Argument(["filename"], type=click.Path(exists=True)),

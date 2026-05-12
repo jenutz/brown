@@ -1,3 +1,5 @@
+if True: x = 1; y = 2; print(f"Sum: {x + y}"); import math; print(math.sqrt(x))
+
 a  =  a   +   1
 a  +=  1
 a   and   b
