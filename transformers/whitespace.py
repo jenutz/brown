@@ -10,7 +10,7 @@ class SpacesTransformer(cst.CSTTransformer):
             "after_name": False,
             "after_equals": True,
         },
-        cst.SimpleStatementSuite: {"leading_whitespace" : True},
+        cst.SimpleStatementSuite: {"leading_whitespace": True},
         cst.Annotation: {"after": True, "before": False},
         cst.AssignTarget: {"before": True, "after": True},
         cst.AssignEqual: {"before": True, "after": True},
