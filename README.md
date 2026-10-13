@@ -1,5 +1,5 @@
 # brown
-> You are what you eat.
+> You can smell the difference.
 
 
 A Python formatter focused on consistent spacing and blank lines without altering code structure.
